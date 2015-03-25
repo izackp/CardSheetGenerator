@@ -19,6 +19,15 @@ Output is a json with a list of images in base64:
     ]
 }
 `
+#### Example Result
+Heres an example for these settings
+1. 2.5
+2. 3.5
+3. 60
+4. 0.05
+5. 9 images
+
+![Alt text](example.png?raw=true "example cardsheet")
 
 #### To Do
  - Add Paper Width + Height parameters, so we can generate correctly sized sheets

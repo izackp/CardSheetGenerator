@@ -45,21 +45,13 @@ namespace ImageReality
 			string result = fsJsonPrinter.PrettyJson(serializedData);
 
 			Console.Write (result);
-
-//			string inputJson = "";
-//			fsData data = fsJsonParser.Parse(inputJson);
-//
-//			object deserialized = null;
-//			_serializer.TryDeserialize(data, typeof(CharacterDesc), ref deserialized);
-//
-
 		}
 
 		public static string[] Sample() {
 			string[] args = new string[5];
 			args[0] = "" + 2.5;
 			args[1] = "" + 3.5;
-			args[2] = "" + 300;
+			args[2] = "" + 60;
 			args[3] = "" + 0.05;
 
 
