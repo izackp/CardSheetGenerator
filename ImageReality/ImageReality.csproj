@@ -14,7 +14,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>DEBUG;NO_UNITY;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
@@ -31,17 +31,123 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Magick.NET-AnyCPU">
-      <HintPath>..\packages\Magick.NET-Q16-AnyCPU.7.0.0.0011\lib\net40-client\Magick.NET-AnyCPU.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsConfig.cs">
+      <Link>Source\fsConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsContext.cs">
+      <Link>Source\fsContext.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsConverter.cs">
+      <Link>Source\fsConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsData.cs">
+      <Link>Source\fsData.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsExceptions.cs">
+      <Link>Source\fsExceptions.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsIgnoreAttribute.cs">
+      <Link>Source\fsIgnoreAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsJsonParser.cs">
+      <Link>Source\fsJsonParser.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsJsonPrinter.cs">
+      <Link>Source\fsJsonPrinter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsMemberSerialization.cs">
+      <Link>Source\fsMemberSerialization.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsObjectAttribute.cs">
+      <Link>Source\fsObjectAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsObjectProcessor.cs">
+      <Link>Source\fsObjectProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsPropertyAttribute.cs">
+      <Link>Source\fsPropertyAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsResult.cs">
+      <Link>Source\fsResult.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\fsSerializer.cs">
+      <Link>Source\fsSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsArrayConverter.cs">
+      <Link>Source\Converters\fsArrayConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsDateConverter.cs">
+      <Link>Source\Converters\fsDateConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsDictionaryConverter.cs">
+      <Link>Source\Converters\fsDictionaryConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsEnumConverter.cs">
+      <Link>Source\Converters\fsEnumConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsGuidConverter.cs">
+      <Link>Source\Converters\fsGuidConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsIEnumerableConverter.cs">
+      <Link>Source\Converters\fsIEnumerableConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsKeyValuePairConverter.cs">
+      <Link>Source\Converters\fsKeyValuePairConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsNullableConverter.cs">
+      <Link>Source\Converters\fsNullableConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsPrimitiveConverter.cs">
+      <Link>Source\Converters\fsPrimitiveConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsReflectedConverter.cs">
+      <Link>Source\Converters\fsReflectedConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsTypeConverter.cs">
+      <Link>Source\Converters\fsTypeConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Converters\fsWeakReferenceConverter.cs">
+      <Link>Source\Converters\fsWeakReferenceConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Internal\fsCyclicReferenceManager.cs">
+      <Link>Source\Internal\fsCyclicReferenceManager.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Internal\fsOption.cs">
+      <Link>Source\Internal\fsOption.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Internal\fsPortableReflection.cs">
+      <Link>Source\Internal\fsPortableReflection.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Internal\fsVersionManager.cs">
+      <Link>Source\Internal\fsVersionManager.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Internal\fsVersionedType.cs">
+      <Link>Source\Internal\fsVersionedType.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Reflection\fsMetaProperty.cs">
+      <Link>Source\Reflection\fsMetaProperty.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Reflection\fsMetaType.cs">
+      <Link>Source\Reflection\fsMetaType.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Reflection\fsReflectionUtility.cs">
+      <Link>Source\Reflection\fsReflectionUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\ThirdParty\FullSerializer\Source\Reflection\fsTypeLookup.cs">
+      <Link>Source\Reflection\fsTypeLookup.cs</Link>
+    </Compile>
+    <Compile Include="Models\Input.cs" />
+    <Compile Include="ImageExt.cs" />
+    <Compile Include="ResamplingService.cs" />
+    <Compile Include="Models\CardSheets.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="packages.config" />
+    <Folder Include="Models\" />
   </ItemGroup>
 </Project>
