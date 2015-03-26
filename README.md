@@ -53,8 +53,6 @@ Heres an example for these settings:
 ![Alt text](example.png?raw=true "example cardsheet")
 
 #### To Do
- - Add Parameters:
-    - Content Center X, Y Offset, content is normally centered but we may want to offset it to account for the printer
  - Use Lanczos for resizing
  - Accept Json Input
  - Make a non-microservice version that's user friendly
