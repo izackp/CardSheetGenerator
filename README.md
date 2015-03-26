@@ -72,10 +72,6 @@ Heres an example for these settings:
 ![Alt text](example.png?raw=true "example cardsheet")
 
 #### To Do
- - Add Parameters:
-   - Downscale Resampling Method
-   - Upscale Resampling Method
- - Add Resampling Methods such as Mitchell and Lanczos
  - Accept Json Input
  - Make a non-microservice version that's user friendly
  - Support manual tiling specifications, so the user can decide between 3x3 or 4x2
