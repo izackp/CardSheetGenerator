@@ -76,3 +76,19 @@ Heres an example for these settings:
  - Make a non-microservice version that's user friendly
  - Support manual tiling specifications, so the user can decide between 3x3 or 4x2
  - Add an auto tiling mode which will automatically try to find the best tiling method to fill the paper
+
+### How to Build The Project
+- Clone the project:
+```
+git clone https://github.com/izackp/CardSheetGenerator.git
+cd CardSheetGenerator/
+git submodule update --init --recursive --depth 1
+cd ThirdParty/FullSerializer/
+git config core.sparsecheckout true
+echo Source > ../../.git/modules/ThirdParty/FullSerializer/info/sparse-checkout
+git read-tree -mu HEAD
+```
+- Open ImageReality.sln in Xamarin Studio
+- Uncomment `//args = Sample ();` for testing
+- Build!
+- Images will also be saved as PNGs in the runtime directory
