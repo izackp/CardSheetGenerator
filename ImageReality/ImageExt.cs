@@ -21,25 +21,115 @@ namespace ImageReality
 	}
 	public static class ImageExt
 	{
-		public static Image Resize(this Image source, int width, int height) {
-			Bitmap newImage = new Bitmap(width, height);
-
+		public static Image Resize(this Image source, int width, int height, ResamplingFilters upscaleFilter, ResamplingFilters downscaleFilter) {
 			float scale = AspectFit (source.Width, source.Height, width, height);
+			ResamplingFilters filterToUse = ResamplingFilters.Lanczos3;
+
+			if (scale == 0)
+				return source;
+			
+			if (scale > 0)
+				filterToUse = upscaleFilter;
+			else
+				filterToUse = downscaleFilter;
 
 			Rectangle drawRect = new Rectangle (0, 0, (int)(source.Width * scale), (int)(source.Height * scale));
-			//center
-			drawRect.X = (int)((width - drawRect.Width) * 0.5);
-			drawRect.Y = (int)((height - drawRect.Height) * 0.5);
+			Bitmap bitmapSouce = new Bitmap(source);
 
-			using (Graphics gr = Graphics.FromImage(newImage))
-			{
-				gr.SmoothingMode = SmoothingMode.HighQuality;
-				gr.InterpolationMode = InterpolationMode.HighQualityBicubic;
-				gr.DrawImage(source, drawRect, new Rectangle(0, 0, source.Width, source.Height), GraphicsUnit.Pixel);
+			ResamplingService resamplingService = new ResamplingService();
+			resamplingService.Filter = filterToUse;
+
+			ushort[][,] input = ConvertBitmapToArray((Bitmap)bitmapSouce);
+			ushort[][,] output = resamplingService.Resample(input, drawRect.Width, 
+				drawRect.Height);
+
+			Image imgResult = (Image)ConvertArrayToBitmap(output);
+
+			return imgResult;
+		}
+
+
+		#region Private Methods
+
+		/// <summary>
+		/// Converts Bitmap to array. Supports only Format32bppArgb pixel format.
+		/// </summary>
+		/// <param name="bmp">Bitmap to convert.</param>
+		/// <returns>Output array.</returns>
+		private static ushort[][,] ConvertBitmapToArray(Bitmap bmp) {
+
+			ushort[][,] array = new ushort[4][,];
+
+			for (int i = 0; i < 4; i++)
+				array[i] = new ushort[bmp.Width, bmp.Height];
+
+			BitmapData bd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+			int nOffset = (bd.Stride - bd.Width * 4);
+
+			unsafe {
+
+				byte* p = (byte*)bd.Scan0;
+
+				for (int y = 0; y < bd.Height; y++) {
+					for (int x = 0; x < bd.Width; x++) {
+
+						array[3][x, y] = (ushort)p[3];
+						array[2][x, y] = (ushort)p[2];
+						array[1][x, y] = (ushort)p[1];
+						array[0][x, y] = (ushort)p[0];
+
+						p += 4;
+					}
+
+					p += nOffset;
+				}
 			}
 
-			return newImage;
+			bmp.UnlockBits(bd);
+
+			return array;
 		}
+
+		/// <summary>
+		/// Converts array to Bitmap. Supports only Format32bppArgb pixel format.
+		/// </summary>
+		/// <param name="array">Array to convert.</param>
+		/// <returns>Output Bitmap.</returns>
+		private static Bitmap ConvertArrayToBitmap(ushort[][,] array) {
+
+			int width = array[0].GetLength(0);
+			int height = array[0].GetLength(1);
+
+			Bitmap bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+
+			BitmapData bd = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+			int nOffset = (bd.Stride - bd.Width * 4);
+
+			unsafe {
+
+				byte* p = (byte*)bd.Scan0;
+
+				for (int y = 0; y < height; y++) {
+					for (int x = 0; x < width; x++) {
+
+						p[3] = (byte)Math.Min(Math.Max(array[3][x, y], Byte.MinValue), Byte.MaxValue);
+						p[2] = (byte)Math.Min(Math.Max(array[2][x, y], Byte.MinValue), Byte.MaxValue);
+						p[1] = (byte)Math.Min(Math.Max(array[1][x, y], Byte.MinValue), Byte.MaxValue);
+						p[0] = (byte)Math.Min(Math.Max(array[0][x, y], Byte.MinValue), Byte.MaxValue);
+
+						p += 4;
+					}
+
+					p += nOffset;
+				}
+			}
+
+			bmp.UnlockBits(bd);
+
+			return bmp;
+		}
+
+		#endregion
 
 		public static float AspectFit(float sourceWidth, float sourceHeight, float destWidth, float destHeight) {
 			float widthDiff = Math.Abs (destWidth - sourceWidth);

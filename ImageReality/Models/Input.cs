@@ -35,6 +35,12 @@ namespace ImageReality
 		[fsProperty("separatorSpace")]
 		public double SeparatorSpace; //Inches
 
+		[fsProperty("downscaleResamplingFilter")]
+		public string DownscaleResamplingFilter; //Inches
+
+		[fsProperty("upscaleResamplingFilter")]
+		public string UpscaleResamplingFilter; //Inches
+
 		[fsProperty("dpi")]
 		public double DPI;
 
@@ -46,11 +52,14 @@ namespace ImageReality
 			int cardPxHeight = (int)(CardHeight * DPI);
 			int borderPxSize = (int)(BorderSize * DPI) * 2;
 
+			ResamplingFilters downscaleFilter = EnumHelper.FromString<ResamplingFilters> (DownscaleResamplingFilter);
+			ResamplingFilters upscaleFilter = EnumHelper.FromString<ResamplingFilters> (UpscaleResamplingFilter);
+
 			List<Image> decodedImages = DecodeImages ();
 			for (int i = 0; i < decodedImages.Count; i += 1) {
 				Image image = decodedImages [i];
 				image = image.Trim ();
-				image = image.Resize (cardPxWidth - borderPxSize, cardPxHeight - borderPxSize);
+				image = image.Resize (cardPxWidth - borderPxSize, cardPxHeight - borderPxSize, upscaleFilter, downscaleFilter);
 				image = image.Extent (cardPxWidth, cardPxHeight, Color.White);
 				if (GuideLineSize != 0) {
 					DrawableLine[] lines = GenerateGuideLines ();

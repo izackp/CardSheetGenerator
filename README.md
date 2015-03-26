@@ -14,6 +14,23 @@ Input must have 11 arguments:
 8.  separatorSpace (decimal; inches)
 9.  contentOffsetX (decimal; inches)
 10. contentOffsetY (decimal; inches)
+11. downscaleResamplingFilter (string)
+12. upscaleResamplingFilter (string)
+  - Supported Filters:
+  - Box
+  - Triangle
+  - Hermite
+  - Bell
+  - CubicBSpline
+  - Lanczos3
+  - Mitchell
+  - Cosine
+  - CatmullRom
+  - Quadratic
+  - QuadraticBSpline
+  - CubicConvolution
+  - Lanczos8
+
 11. image array with images in base64 `[img1blah+blah=, img2blah+blah=, img3blah+blah=]`
 
 Output is a json with a list of images in base64:
@@ -48,12 +65,17 @@ Heres an example for these settings:
 8. -0.01667 (negative separator space causes guidelines to overlap)
 9. 0
 10. 0
-11. 9 images
+11. Lanczos3
+12. Mitchell
+13. 9 images
 
 ![Alt text](example.png?raw=true "example cardsheet")
 
 #### To Do
- - Use Lanczos for resizing
+ - Add Parameters:
+   - Downscale Resampling Method
+   - Upscale Resampling Method
+ - Add Resampling Methods such as Mitchell and Lanczos
  - Accept Json Input
  - Make a non-microservice version that's user friendly
  - Support manual tiling specifications, so the user can decide between 3x3 or 4x2
