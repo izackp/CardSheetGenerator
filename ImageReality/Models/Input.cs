@@ -17,6 +17,24 @@ namespace ImageReality
 		[fsProperty("cardHeight")]
 		public double CardHeight; //Inches
 
+		[fsProperty("paperWidth")]
+		public double PaperWidth; //Inches
+
+		[fsProperty("paperHeight")]
+		public double PaperHeight; //Inches
+
+		[fsProperty("contentOffsetX")]
+		public double ContentOffsetX; //Inches
+
+		[fsProperty("contentOffsetY")]
+		public double ContentOffsetY; //Inches
+
+		[fsProperty("borderSize")]
+		public double BorderSize; //Inches
+
+		[fsProperty("separatorSpace")]
+		public double SeparatorSpace; //Inches
+
 		[fsProperty("dpi")]
 		public double DPI;
 
@@ -26,12 +44,13 @@ namespace ImageReality
 		public List<string> GenerateCardSheets() {
 			int cardPxWidth = (int)(CardWidth * DPI);
 			int cardPxHeight = (int)(CardHeight * DPI);
+			int borderPxSize = (int)(BorderSize * DPI) * 2;
 
 			List<Image> decodedImages = DecodeImages ();
 			for (int i = 0; i < decodedImages.Count; i += 1) {
 				Image image = decodedImages [i];
 				image = image.Trim ();
-				image = image.Resize (cardPxWidth, cardPxHeight);
+				image = image.Resize (cardPxWidth - borderPxSize, cardPxHeight - borderPxSize);
 				image = image.Extent (cardPxWidth, cardPxHeight, Color.White);
 				if (GuideLineSize != 0) {
 					DrawableLine[] lines = GenerateGuideLines ();
@@ -70,6 +89,12 @@ namespace ImageReality
 		}
 
 		List<Image> GenerateMontage(List<Image> decodedImages) {
+			int paperPxWidth = (int)(PaperWidth * DPI);
+			int paperPxHeight = (int)(PaperHeight * DPI);
+			int contentOffsetPxX = (int)(ContentOffsetX * DPI);
+			int contentOffsetPxY = (int)(ContentOffsetY * DPI);
+			int separatorPxSpace = (int)(SeparatorSpace * DPI);
+
 			List<Image> imageSheets = new List<Image> ();
 
 			for (int i = 0; i < decodedImages.Count; i += 9) {
@@ -77,7 +102,7 @@ namespace ImageReality
 				if (numImages > 9)
 					numImages = 9;
 				List<Image> setOf9 = decodedImages.GetRange (i, numImages);
-				Image result = ImageExt.TileImages (setOf9, 3);
+				Image result = ImageExt.TileImages (setOf9, 3, paperPxWidth, paperPxHeight, separatorPxSpace, contentOffsetPxX, contentOffsetPxY);
 				imageSheets.Add (result);
 			}
 			return imageSheets;

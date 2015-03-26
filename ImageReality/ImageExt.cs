@@ -138,7 +138,7 @@ namespace ImageReality
 		}
 
 		//assumes all images are the same size
-		public static Image TileImages(List<Image> images, int columns) {
+		public static Image TileImages(List<Image> images, int columns, int canvasWidth, int canvasHeight, int separatorSpace, int contentOffsetX, int contentOffsetY) {
 			if (images.Count == 0)
 				return null;
 
@@ -149,19 +149,27 @@ namespace ImageReality
 
 			int imageWidth = images [0].Width;
 			int imageHeight = images [0].Height;
-			int width = columns * imageWidth;
-			int height = rows * imageHeight;
+			int width = columns * imageWidth + (columns - 1) * separatorSpace;
+			int height = rows * imageHeight + (rows - 1) * separatorSpace;
+
+			//To Center the tiles
+			int xOffset = (canvasWidth - width) / 2 + contentOffsetX;
+			int yOffset = (canvasHeight - height) / 2 + contentOffsetY;
 
 			Rectangle[] destRects = new Rectangle[rows * columns];
 			for (int row = 0; row < rows; row += 1) {
+				int separatorY = row * separatorSpace;
 				for (int column = 0; column < columns; column += 1) {
-					destRects[row * columns + column] = new Rectangle(column * imageWidth, row * imageHeight, imageWidth, imageHeight);
+					int separatorX = column * separatorSpace;
+					destRects[row * columns + column] = new Rectangle(column * imageWidth + xOffset + separatorX, row * imageHeight + yOffset + separatorY, imageWidth, imageHeight);
 				}
 			}
 
-			Bitmap tiledImageSheet = new Bitmap(width, height);
+			Bitmap tiledImageSheet = new Bitmap(canvasWidth, canvasHeight);
+			SolidBrush coloredBrush = new SolidBrush(Color.White);
 			using (Graphics graphics = Graphics.FromImage(tiledImageSheet))
 			{
+				graphics.FillRectangle (coloredBrush, tiledImageSheet.Bounds());
 				for (int i = 0; i < images.Count; i += 1) {
 					Image source = images [i];
 					Rectangle dest = destRects [i];
