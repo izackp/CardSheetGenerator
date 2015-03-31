@@ -34,14 +34,14 @@ Input must have 11 arguments:
 11. image array with images in base64 `[img1blah+blah=, img2blah+blah=, img3blah+blah=]`
 
 Output is a json with a list of images in base64:
-`
+```
 {
     "cardSheets": [
         "imgSheet1blah+blah=",
         "imgSheet2blah+blah="
     ]
 }
-`
+```
 
 #### The Process
 We take your images and it:
