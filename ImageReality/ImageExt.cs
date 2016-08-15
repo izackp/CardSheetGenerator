@@ -5,6 +5,8 @@ using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 
+using ImageProcessor.Common.Exceptions;
+
 namespace ImageReality
 {
 	public class DrawableLine {
@@ -48,6 +50,11 @@ namespace ImageReality
 			return imgResult;
 		}
 
+		public static Bitmap Despeckle (this Image source, int adaptRadius, DespeckleFilterType filterType, int whiteLevel, int blackLevel) {
+			Pixel[,] pixels = ConvertBitmapToPixelArray ((Bitmap)source);
+			Pixel[,] despeckeled = DespeckleHistogram.DespeckleMedian (pixels, adaptRadius, filterType, whiteLevel, blackLevel);
+			return ConvertPixelArrayToBitmap (despeckeled);
+		}
 
 		#region Private Methods
 
@@ -127,6 +134,53 @@ namespace ImageReality
 			bmp.UnlockBits(bd);
 
 			return bmp;
+		}
+
+		private static Pixel[,] ConvertBitmapToPixelArray(Bitmap bmp) {
+
+			ushort[][,] array = ConvertBitmapToArray (bmp);
+			ushort[,] oneDimension = array [0];
+			int xLength = oneDimension.GetLength (0);
+			int yLength = oneDimension.GetLength (1);
+
+			Pixel[,] pixels = new Pixel[xLength, yLength];
+
+			for (int x = 0; x < xLength; x++) {
+				for (int y = 0; y < yLength; y++) {
+					ushort r = array [0] [x, y];
+					ushort g = array [1] [x, y];
+					ushort b = array [2] [x, y];
+					ushort a = array [3] [x, y];
+					pixels [x, y] = new Pixel (r, g, b, a);
+				}
+			}
+
+			return pixels;
+		}
+
+		private static Bitmap ConvertPixelArrayToBitmap(Pixel[,] array) {
+			
+			int xLength = array.GetLength (0);
+			int yLength = array.GetLength (1);
+
+			ushort[][,] bitArray = new ushort[4][,];
+
+			for (int i = 0; i < 4; i++)
+				bitArray[i] = new ushort[xLength, yLength];
+
+			Pixel[,] pixels = new Pixel[xLength, yLength];
+
+			for (int x = 0; x < xLength; x++) {
+				for (int y = 0; y < yLength; y++) {
+					Pixel currPixel = pixels [x, y];
+					bitArray [0] [x, y] = currPixel.R;
+					bitArray [1] [x, y] = currPixel.G;
+					bitArray [2] [x, y] = currPixel.B;
+					bitArray [3] [x, y] = currPixel.A;
+				}
+			}
+
+			return ConvertArrayToBitmap(bitArray);
 		}
 
 		#endregion
@@ -267,6 +321,217 @@ namespace ImageReality
 				}
 			}
 			return tiledImageSheet;
+		}
+
+		public static Bitmap RotateImage(this Image image, float angle)
+		{
+			if(image == null)
+				throw new ArgumentNullException("image");
+
+			const double pi2 = Math.PI / 2.0;
+
+
+			double oldWidth = (double) image.Width;
+			double oldHeight = (double) image.Height;
+
+			// Convert degrees to radians
+			double theta = ((double) angle) * Math.PI / 180.0;
+			double locked_theta = theta;
+
+			// Ensure theta is now [0, 2pi)
+			while( locked_theta < 0.0 )
+				locked_theta += 2 * Math.PI;
+
+			double newWidth, newHeight; 
+			int nWidth, nHeight; // The newWidth/newHeight expressed as ints
+
+
+
+			double adjacentTop, oppositeTop;
+			double adjacentBottom, oppositeBottom;
+
+
+			if( (locked_theta >= 0.0 && locked_theta < pi2) ||
+				(locked_theta >= Math.PI && locked_theta < (Math.PI + pi2) ) )
+			{
+				adjacentTop = Math.Abs(Math.Cos(locked_theta)) * oldWidth;
+				oppositeTop = Math.Abs(Math.Sin(locked_theta)) * oldWidth;
+
+				adjacentBottom = Math.Abs(Math.Cos(locked_theta)) * oldHeight;
+				oppositeBottom = Math.Abs(Math.Sin(locked_theta)) * oldHeight;
+			}
+			else
+			{
+				adjacentTop = Math.Abs(Math.Sin(locked_theta)) * oldHeight;
+				oppositeTop = Math.Abs(Math.Cos(locked_theta)) * oldHeight;
+
+				adjacentBottom = Math.Abs(Math.Sin(locked_theta)) * oldWidth;
+				oppositeBottom = Math.Abs(Math.Cos(locked_theta)) * oldWidth;
+			}
+
+			newWidth = adjacentTop + oppositeBottom;
+			newHeight = adjacentBottom + oppositeTop;
+
+			nWidth = (int) Math.Ceiling(newWidth);
+			nHeight = (int) Math.Ceiling(newHeight);
+
+			Bitmap rotatedBmp = new Bitmap(nWidth, nHeight);
+
+			using(Graphics g = Graphics.FromImage(rotatedBmp))
+			{
+
+				Point [] points;
+
+				if( locked_theta >= 0.0 && locked_theta < pi2 )
+				{
+					points = new Point[] { 
+						new Point( (int) oppositeBottom, 0 ), 
+						new Point( nWidth, (int) oppositeTop ),
+						new Point( 0, (int) adjacentBottom )
+					};
+
+				}
+				else if( locked_theta >= pi2 && locked_theta < Math.PI )
+				{
+					points = new Point[] { 
+						new Point( nWidth, (int) oppositeTop ),
+						new Point( (int) adjacentTop, nHeight ),
+						new Point( (int) oppositeBottom, 0 )                        
+					};
+				}
+				else if( locked_theta >= Math.PI && locked_theta < (Math.PI + pi2) )
+				{
+					points = new Point[] { 
+						new Point( (int) adjacentTop, nHeight ), 
+						new Point( 0, (int) adjacentBottom ),
+						new Point( nWidth, (int) oppositeTop )
+					};
+				}
+				else
+				{
+					points = new Point[] { 
+						new Point( 0, (int) adjacentBottom ), 
+						new Point( (int) oppositeBottom, 0 ),
+						new Point( (int) adjacentTop, nHeight )        
+					};
+				}
+
+				g.DrawImage(image, points);
+			}
+
+			return rotatedBmp;
+		}
+
+		public static Bitmap Alpha(this Image source, int percentage, Rectangle? rectangle = null)
+		{
+			return ImageProcessor.Imaging.Helpers.Adjustments.Alpha(source, percentage, rectangle);
+		}
+
+		public static Bitmap Brightness(Image source, int threshold, Rectangle? rectangle = null)
+		{
+			return ImageProcessor.Imaging.Helpers.Adjustments.Brightness(source, threshold, rectangle);
+		}
+			
+		public static Bitmap Contrast(Image source, int threshold, Rectangle? rectangle = null)
+		{
+			return ImageProcessor.Imaging.Helpers.Adjustments.Contrast(source, threshold, rectangle);
+		}
+			
+		public static Bitmap Gamma(Image source, float value)
+		{
+			return ImageProcessor.Imaging.Helpers.Adjustments.Gamma(source, value);
+		}
+
+		public static Bitmap Crop(this Image source, ImageProcessor.Imaging.CropLayer cropLayer) 
+		{
+			Bitmap newImage = null;
+			Image image = source;
+			try
+			{
+				int sourceWidth = image.Width;
+				int sourceHeight = image.Height;
+				RectangleF rectangleF;
+
+				if (cropLayer.CropMode == ImageProcessor.Imaging.CropMode.Percentage)
+				{
+					// Fix for whole numbers. 
+					cropLayer.Left = cropLayer.Left > 1 ? cropLayer.Left / 100 : cropLayer.Left;
+					cropLayer.Right = cropLayer.Right > 1 ? cropLayer.Right / 100 : cropLayer.Right;
+					cropLayer.Top = cropLayer.Top > 1 ? cropLayer.Top / 100 : cropLayer.Top;
+					cropLayer.Bottom = cropLayer.Bottom > 1 ? cropLayer.Bottom / 100 : cropLayer.Bottom;
+
+					// Work out the percentages.
+					float left = cropLayer.Left * sourceWidth;
+					float top = cropLayer.Top * sourceHeight;
+					float width = cropLayer.Right < 1 ? (1 - cropLayer.Left - cropLayer.Right) * sourceWidth : sourceWidth;
+					float height = cropLayer.Bottom < 1 ? (1 - cropLayer.Top - cropLayer.Bottom) * sourceHeight : sourceHeight;
+
+					rectangleF = new RectangleF(left, top, width, height);
+				}
+				else
+				{
+					rectangleF = new RectangleF(cropLayer.Left, cropLayer.Top, cropLayer.Right, cropLayer.Bottom);
+				}
+
+				Rectangle rectangle = Rectangle.Round(rectangleF);
+
+				if (rectangle.X < sourceWidth && rectangle.Y < sourceHeight)
+				{
+					if (rectangle.Width > (sourceWidth - rectangle.X))
+					{
+						rectangle.Width = sourceWidth - rectangle.X;
+					}
+
+					if (rectangle.Height > (sourceHeight - rectangle.Y))
+					{
+						rectangle.Height = sourceHeight - rectangle.Y;
+					}
+
+					newImage = new Bitmap(rectangle.Width, rectangle.Height);
+					newImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+					using (Graphics graphics = Graphics.FromImage(newImage))
+					{
+						graphics.SmoothingMode = SmoothingMode.AntiAlias;
+						graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+						graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+						graphics.CompositingQuality = CompositingQuality.HighQuality;
+
+						// An unwanted border appears when using InterpolationMode.HighQualityBicubic to resize the image
+						// as the algorithm appears to be pulling averaging detail from surrounding pixels beyond the edge 
+						// of the image. Using the ImageAttributes class to specify that the pixels beyond are simply mirror 
+						// images of the pixels within solves this problem.
+						using (ImageAttributes wrapMode = new ImageAttributes())
+						{
+							wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+							graphics.DrawImage(
+								image,
+								new Rectangle(0, 0, rectangle.Width, rectangle.Height),
+								rectangle.X,
+								rectangle.Y,
+								rectangle.Width,
+								rectangle.Height,
+								GraphicsUnit.Pixel,
+								wrapMode);
+						}
+					}
+
+					// Reassign the image.
+					image.Dispose();
+					image = newImage;
+				}
+			}
+			catch (Exception ex)
+			{
+				if (newImage != null)
+				{
+					newImage.Dispose();
+				}
+
+				throw new ImageProcessingException("Error processing image with crop", ex);
+			}
+
+			return (Bitmap)image;
 		}
 	}
 }

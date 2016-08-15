@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageReality", "ImageReality\ImageReality.csproj", "{7315CE68-3196-43E0-B89B-CD4A1319B0A3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{C05E023A-1AB6-48E4-9E9D-123C01753530}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,5 +15,9 @@ Global
 		{7315CE68-3196-43E0-B89B-CD4A1319B0A3}.Debug|x86.Build.0 = Debug|x86
 		{7315CE68-3196-43E0-B89B-CD4A1319B0A3}.Release|x86.ActiveCfg = Release|x86
 		{7315CE68-3196-43E0-B89B-CD4A1319B0A3}.Release|x86.Build.0 = Release|x86
+		{C05E023A-1AB6-48E4-9E9D-123C01753530}.Debug|x86.ActiveCfg = Debug|x86
+		{C05E023A-1AB6-48E4-9E9D-123C01753530}.Debug|x86.Build.0 = Debug|x86
+		{C05E023A-1AB6-48E4-9E9D-123C01753530}.Release|x86.ActiveCfg = Release|x86
+		{C05E023A-1AB6-48E4-9E9D-123C01753530}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal

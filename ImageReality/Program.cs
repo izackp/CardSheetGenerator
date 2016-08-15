@@ -11,6 +11,12 @@ namespace ImageReality
 
 		public static void Main (string[] args)
 		{
+			
+
+
+		}
+
+		public static void RunConsoleVersion(string[] args) {
 			Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 			//args = Sample ();
